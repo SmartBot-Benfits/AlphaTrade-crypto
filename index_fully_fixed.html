@@ -1,0 +1,2741 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Trade Crypto - Professional Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        secondary: '#0A1E3A',
+                        accent: '#00FFA3',
+                        dark: '#181818',
+                        'crypto-dark': '#1a1b23',
+                        'crypto-light': '#f8fafc',
+                        'card-dark': '#262d3e',
+                        'card-light': '#ffffff',
+                        'border-dark': '#374151',
+                        'text-dark': '#e5e7eb'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-in-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'bounce-in': 'bounceIn 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s linear infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'float': 'float 6s ease-in-out infinite',
+                        'gradient': 'gradient 15s ease infinite'
+                    },
+                    screens: {
+                        'xs': '475px',
+                    },
+                    boxShadow: {
+                        'crypto': '0 4px 25px rgba(93, 92, 222, 0.15)',
+                        'crypto-dark': '0 4px 25px rgba(0, 0, 0, 0.3)',
+                        'leaderboard': '0 8px 32px rgba(0, 0, 0, 0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #5D5CDE; }
+            to { box-shadow: 0 0 20px #5D5CDE, 0 0 30px #5D5CDE; }
+        }
+        @keyframes float { 
+            0%, 100% { transform: translateY(0px); } 
+            50% { transform: translateY(-20px); } 
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .section { display: none; opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+        .section.active { display: block; opacity: 1; transform: translateY(0); }
+        
+        .crypto-gradient {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #5D5CDE, #00FFA3);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        .glass-effect { 
+            backdrop-filter: blur(20px); 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+        }
+        
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chart-container { position: relative; height: 300px; }
+        .chart-container.large { height: 400px; }
+        
+        .leaderboard-item {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .leaderboard-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(93, 92, 222, 0.2);
+        }
+        
+        .leaderboard-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .leaderboard-item:hover::before {
+            left: 100%;
+        }
+        
+        .rank-badge {
+            background: linear-gradient(135deg, #5D5CDE, #00FFA3);
+            color: white;
+            font-weight: bold;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .rank-badge.gold {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        
+        .rank-badge.silver {
+            background: linear-gradient(135deg, #C0C0C0, #808080);
+        }
+        
+        .rank-badge.bronze {
+            background: linear-gradient(135deg, #CD7F32, #8B4513);
+        }
+
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.show { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            animation: fadeIn 0.3s ease; 
+        }
+        
+        .modal-content { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 30px; 
+            max-width: 500px; 
+            width: 90%; 
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: bounceIn 0.5s ease; 
+        }
+        
+        .dark .modal-content {
+            background: #262d3e;
+            color: #e5e7eb;
+        }
+        
+        .toast { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            padding: 16px 24px; 
+            border-radius: 12px; 
+            z-index: 1001; 
+            animation: slideUp 0.5s ease;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+        
+        .toast.success { background: #10b981; color: white; }
+        .toast.error { background: #ef4444; color: white; }
+        .toast.warning { background: #f59e0b; color: white; }
+        .toast.info { background: #3b82f6; color: white; }
+        
+        .nav-item { 
+            position: relative; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background: rgba(93, 92, 222, 0.1);
+        }
+        
+        .dark .nav-item:hover {
+            background: rgba(93, 92, 222, 0.2);
+        }
+        
+        .floating-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .floating-card {
+            background: rgba(38, 45, 62, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #5D5CDE, #7c3aed);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(93, 92, 222, 0.3);
+        }
+        
+        .btn-accent {
+            background: linear-gradient(135deg, #00FFA3, #00e694);
+            color: #0A1E3A;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 163, 0.3);
+        }
+        
+        .price-up { color: #10b981; }
+        .price-down { color: #ef4444; }
+        
+        .loading { 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #5D5CDE; 
+            border-radius: 50%; 
+            width: 40px; 
+            height: 40px; 
+            animation: spin 2s linear infinite; 
+        }
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        
+        .particle { 
+            position: absolute; 
+            border-radius: 50%; 
+            pointer-events: none; 
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .admin-panel { 
+            border: 2px solid #ef4444; 
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); 
+        }
+        
+        .backend-mode { 
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a); 
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .chart-container { height: 250px; }
+            .modal-content { padding: 20px; margin: 10px; }
+            .toast { right: 10px; top: 10px; font-size: 14px; }
+        }
+
+        /* Input styles */
+        .crypto-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            color: inherit;
+        }
+        
+        .crypto-input:focus {
+            outline: none;
+            border-color: #5D5CDE;
+            box-shadow: 0 0 0 3px rgba(93, 92, 222, 0.1);
+        }
+        
+        .dark .crypto-input {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="font-sans bg-crypto-light dark:bg-crypto-dark text-gray-900 dark:text-gray-100 transition-all duration-300">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300">
+        <div class="floating-card mx-4 mt-4 sm:mx-6 lg:mx-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <h1 id="logo" class="text-xl sm:text-2xl font-bold text-primary cursor-pointer hover:text-accent transition-colors duration-300">
+                            <i class="fas fa-coins mr-2"></i>
+                            <span class="hidden sm:inline">Alpha Trade Crypto</span>
+                            <span class="sm:hidden">ATC</span>
+                        </h1>
+                    </div>
+                    
+                    <!-- Desktop Navigation -->
+                    <div class="hidden lg:flex items-center space-x-2">
+                        <a href="#" onclick="showSection('home')" class="nav-item text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-300">Home</a>
+                        <a href="#" onclick="showSection('simulator')" class="nav-item text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-300">Trading</a>
+                        <a href="#" onclick="showSection('portfolio')" class="nav-item text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-300">Portfolio</a>
+                        <a href="#" onclick="showSection('orderbook')" class="nav-item text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-300">Markets</a>
+                        <a href="#" onclick="showSection('history')" class="nav-item text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-300">History</a>
+                        <a href="#" onclick="showSection('analytics')" class="nav-item text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-300">Analytics</a>
+                        <button onclick="showLoginModal()" class="btn-primary ml-4">
+                            <i class="fas fa-user mr-2"></i><span id="loginButtonText">Login</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <div class="lg:hidden">
+                        <button id="mobileMenuBtn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden">
+            <div class="floating-card mx-4 mt-2 sm:mx-6">
+                <div class="px-4 py-2 space-y-2">
+                    <a href="#" onclick="showSection('home')" class="block nav-item text-gray-700 dark:text-gray-300">Home</a>
+                    <a href="#" onclick="showSection('simulator')" class="block nav-item text-gray-700 dark:text-gray-300">Trading</a>
+                    <a href="#" onclick="showSection('portfolio')" class="block nav-item text-gray-700 dark:text-gray-300">Portfolio</a>
+                    <a href="#" onclick="showSection('orderbook')" class="block nav-item text-gray-700 dark:text-gray-300">Markets</a>
+                    <a href="#" onclick="showSection('history')" class="block nav-item text-gray-700 dark:text-gray-300">History</a>
+                    <a href="#" onclick="showSection('analytics')" class="block nav-item text-gray-700 dark:text-gray-300">Analytics</a>
+                    <button onclick="showLoginModal()" class="w-full text-left nav-item text-primary font-semibold">
+                        <i class="fas fa-user mr-2"></i><span id="mobileLoginText">Login</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Particle Background -->
+    <div id="particles" class="fixed inset-0 z-0 pointer-events-none"></div>
+
+    <!-- Home Section -->
+    <div id="home" class="section active pt-24">
+        <!-- Hero Section -->
+        <section class="crypto-gradient text-white py-16 sm:py-20 lg:py-24 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <div class="floating particle w-3 h-3 sm:w-4 sm:h-4 bg-accent rounded-full" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+                <div class="floating particle w-4 h-4 sm:w-6 sm:h-6 bg-white rounded-full" style="top: 20%; right: 15%; animation-delay: 1s;"></div>
+                <div class="floating particle w-2 h-2 sm:w-3 sm:h-3 bg-accent rounded-full" style="bottom: 30%; left: 20%; animation-delay: 2s;"></div>
+                <div class="floating particle w-3 h-3 sm:w-5 sm:h-5 bg-white rounded-full" style="bottom: 10%; right: 10%; animation-delay: 3s;"></div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center animate-fade-in">
+                    <h1 class="text-3xl sm:text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-accent to-white bg-clip-text text-transparent leading-tight">
+                        Professional Crypto Trading Platform
+                    </h1>
+                    <p class="text-lg sm:text-xl lg:text-2xl mb-8 max-w-4xl mx-auto opacity-90 leading-relaxed">
+                        Advanced trading tools, real-time analytics, and institutional-grade security. Join thousands of traders maximizing their crypto investments with Alpha Trade Crypto.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <button onclick="showSection('simulator')" class="btn-accent w-full sm:w-auto">
+                            <i class="fas fa-rocket mr-2"></i>Start Trading Now
+                        </button>
+                        <button onclick="scrollToFeatures()" class="btn-primary w-full sm:w-auto bg-transparent border-2 border-white hover:bg-white hover:text-primary">
+                            <i class="fas fa-info-circle mr-2"></i>Learn More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Market Ticker -->
+        <section class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg py-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-center space-x-4 sm:space-x-8 text-sm font-medium overflow-x-auto">
+                    <div class="flex items-center whitespace-nowrap">
+                        <i class="fab fa-bitcoin text-yellow-500 mr-2"></i>
+                        <span>BTC: $<span id="btc-ticker">65,234</span></span>
+                        <span id="btc-change" class="ml-2 price-up">+2.34%</span>
+                    </div>
+                    <div class="flex items-center whitespace-nowrap">
+                        <i class="fab fa-ethereum text-blue-500 mr-2"></i>
+                        <span>ETH: $<span id="eth-ticker">3,421</span></span>
+                        <span id="eth-change" class="ml-2 price-up">+1.85%</span>
+                    </div>
+                    <div class="flex items-center whitespace-nowrap">
+                        <i class="fas fa-users text-accent mr-2"></i>
+                        <span>Active: <span id="users-online" class="text-accent font-bold">24,573</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="py-16 sm:py-20 bg-crypto-light dark:bg-crypto-dark">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 animate-slide-up">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Why Choose Alpha Trade Crypto</h2>
+                    <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">Industry-leading features designed for professional traders</p>
+                </div>
+                
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    <div class="floating-card p-6 lg:p-8 text-center hover:shadow-crypto dark:hover:shadow-crypto-dark transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="bg-gradient-to-r from-primary to-purple-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-slow">
+                            <i class="fas fa-shield-alt text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-4">Bank-Grade Security</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">Military-grade encryption, cold storage, and multi-signature wallets protect your investments with institutional-level security.</p>
+                        <button onclick="showSecurityModal()" class="text-primary hover:text-accent transition-colors duration-300 font-semibold">
+                            Learn More <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="floating-card p-6 lg:p-8 text-center hover:shadow-crypto dark:hover:shadow-crypto-dark transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="bg-gradient-to-r from-accent to-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-slow">
+                            <i class="fas fa-chart-line text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-4">Advanced Analytics</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">Professional charting tools, real-time market analysis, and AI-powered insights to maximize your trading performance.</p>
+                        <button onclick="showSection('analytics')" class="text-primary hover:text-accent transition-colors duration-300 font-semibold">
+                            View Analytics <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="floating-card p-6 lg:p-8 text-center hover:shadow-crypto dark:hover:shadow-crypto-dark transition-all duration-300 transform hover:-translate-y-2 sm:col-span-2 lg:col-span-1">
+                        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-slow">
+                            <i class="fas fa-headset text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-4">24/7 Expert Support</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">Round-the-clock professional support from certified trading experts and dedicated account managers.</p>
+                        <button onclick="simulateChat()" class="btn-primary">
+                            <i class="fas fa-comments mr-2"></i>Contact Support
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section class="py-16 sm:py-20 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 animate-slide-up">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Top Performers</h2>
+                    <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Leading traders and highest returns on our platform</p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
+                    <!-- Top Deposits Leaderboard -->
+                    <div class="floating-card p-6 lg:p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
+                                <i class="fas fa-trophy text-yellow-500 mr-3"></i>
+                                Top Deposits
+                            </h3>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Live Rankings</span>
+                        </div>
+                        
+                        <div class="space-y-4" id="depositsLeaderboard">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Top Earners Leaderboard -->
+                    <div class="floating-card p-6 lg:p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
+                                <i class="fas fa-chart-line text-accent mr-3"></i>
+                                Top Earners
+                            </h3>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">This Month</span>
+                        </div>
+                        
+                        <div class="space-y-4" id="earnersLeaderboard">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 animate-slide-up">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Professional Trading Services</h2>
+                    <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">Comprehensive financial solutions for every type of investor</p>
+                </div>
+                
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    <div class="floating-card p-6 lg:p-8 hover:shadow-crypto dark:hover:shadow-crypto-dark transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                            <i class="fas fa-chart-line text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-4">Forex Trading</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">Trade major, minor, and exotic currency pairs with institutional spreads and professional execution.</p>
+                        <ul class="text-sm text-gray-600 dark:text-gray-300 mb-6 space-y-2">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Spreads from 0.1 pips</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Leverage up to 1:500</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>24/5 market access</li>
+                        </ul>
+                        <button onclick="showServiceModal('forex')" class="btn-primary w-full">
+                            Start Forex Trading
+                        </button>
+                    </div>
+                    
+                    <div class="floating-card p-6 lg:p-8 hover:shadow-crypto dark:hover:shadow-crypto-dark transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="bg-gradient-to-r from-blue-400 to-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                            <i class="fas fa-exchange-alt text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-4">Crypto Exchange</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">Instant cryptocurrency exchange with deep liquidity and competitive rates.</p>
+                        <ul class="text-sm text-gray-600 dark:text-gray-300 mb-6 space-y-2">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>200+ cryptocurrencies</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Best market rates</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Instant settlement</li>
+                        </ul>
+                        <button onclick="showServiceModal('exchange')" class="btn-primary w-full">
+                            Start Exchange
+                        </button>
+                    </div>
+                    
+                    <div class="floating-card p-6 lg:p-8 hover:shadow-crypto dark:hover:shadow-crypto-dark transition-all duration-300 transform hover:-translate-y-2 sm:col-span-2 lg:col-span-1">
+                        <div class="bg-gradient-to-r from-green-400 to-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                            <i class="fas fa-university text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-4">Wealth Management</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">Professional portfolio management and wealth advisory services.</p>
+                        <ul class="text-sm text-gray-600 dark:text-gray-300 mb-6 space-y-2">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Dedicated advisors</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Custom strategies</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Risk management</li>
+                        </ul>
+                        <button onclick="showServiceModal('banking')" class="btn-primary w-full">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="py-16 sm:py-20 crypto-gradient text-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4 animate-slide-up">Stay Ahead of the Market</h2>
+                <p class="text-lg sm:text-xl mb-8 opacity-90 animate-slide-up">Get exclusive market insights, trading signals, and platform updates delivered to your inbox.</p>
+                <div class="flex flex-col sm:flex-row max-w-md mx-auto gap-4 animate-slide-up">
+                    <input type="email" id="newsletterEmail" placeholder="Enter your email address" class="crypto-input flex-1 bg-white/10 border-white/20 placeholder-white/70 text-white">
+                    <button onclick="subscribeNewsletter()" class="btn-accent whitespace-nowrap">
+                        <i class="fas fa-paper-plane mr-2"></i>Subscribe
+                    </button>
+                </div>
+                <p class="text-sm mt-4 opacity-70">Join <span id="subscriberCount">127,432</span> subscribers worldwide</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Trading Section -->
+    <div id="simulator" class="section pt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-12 animate-slide-up">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Professional Trading Platform</h1>
+                <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Advanced tools for institutional-grade trading</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Trading Panel -->
+                <div class="lg:col-span-1 order-2 lg:order-1">
+                    <div class="floating-card p-6">
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-6">Trading Panel</h3>
+                        
+                        <!-- Coin Selection -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Asset</label>
+                            <select id="coinSelect" class="crypto-input w-full">
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                            </select>
+                        </div>
+
+                        <!-- Current Price Display -->
+                        <div class="floating-card p-4 mb-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-600 dark:text-gray-300 font-medium">Current Price:</span>
+                                <span id="currentPrice" class="text-xl lg:text-2xl font-bold text-primary">$65,234</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 dark:text-gray-300 font-medium">24h Change:</span>
+                                <span id="priceChange" class="font-semibold price-up">+2.34%</span>
+                            </div>
+                        </div>
+
+                        <!-- Trade Amount -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Amount (USD)</label>
+                            <input type="number" id="tradeAmount" placeholder="Enter amount" min="10" class="crypto-input w-full">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Minimum: $10</p>
+                        </div>
+
+                        <!-- Stop Loss / Take Profit -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Stop Loss (%)</label>
+                                <input type="range" id="stopLossSlider" min="1" max="20" value="5" class="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer">
+                                <div class="text-center text-sm text-red-500 font-semibold mt-1">
+                                    <span id="stopLossValue">5</span>%
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Take Profit (%)</label>
+                                <input type="range" id="takeProfitSlider" min="5" max="50" value="15" class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer">
+                                <div class="text-center text-sm text-green-500 font-semibold mt-1">
+                                    <span id="takeProfitValue">15</span>%
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trade Buttons -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <button onclick="executeTrade('buy')" class="bg-green-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-arrow-up mr-2"></i>Buy
+                            </button>
+                            <button onclick="executeTrade('sell')" class="bg-red-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-600 transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-arrow-down mr-2"></i>Sell
+                            </button>
+                        </div>
+
+                        <!-- KYC Verification -->
+                        <div id="kycSection" class="floating-card bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-4">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                                <span class="font-semibold text-yellow-800 dark:text-yellow-200">Identity Verification Required</span>
+                            </div>
+                            <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-3">Complete verification to unlock full trading features</p>
+                            <button onclick="showKYCModal()" class="btn-primary w-full bg-yellow-500 hover:bg-yellow-600">
+                                <i class="fas fa-id-card mr-2"></i>Verify Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="lg:col-span-2 order-1 lg:order-2">
+                    <div class="floating-card p-6">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+                            <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white">Market Analysis</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 bg-primary text-white rounded text-sm font-medium">1H</button>
+                                <button class="px-3 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded text-sm">4H</button>
+                                <button class="px-3 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded text-sm">1D</button>
+                                <button class="px-3 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded text-sm">1W</button>
+                            </div>
+                        </div>
+                        <div class="chart-container large">
+                            <canvas id="marketChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Market Stats -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                        <div class="floating-card p-4 text-center">
+                            <div class="text-lg lg:text-2xl font-bold text-green-500" id="dailyHigh">$67,890</div>
+                            <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">24h High</div>
+                        </div>
+                        <div class="floating-card p-4 text-center">
+                            <div class="text-lg lg:text-2xl font-bold text-red-500" id="dailyLow">$64,123</div>
+                            <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">24h Low</div>
+                        </div>
+                        <div class="floating-card p-4 text-center">
+                            <div class="text-lg lg:text-2xl font-bold text-primary" id="volume">2.34M</div>
+                            <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Volume</div>
+                        </div>
+                        <div class="floating-card p-4 text-center">
+                            <div class="text-lg lg:text-2xl font-bold text-accent" id="marketCap">1.2T</div>
+                            <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Market Cap</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Section -->
+    <div id="portfolio" class="section pt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-12 animate-slide-up">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Portfolio Overview</h1>
+                <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Monitor your investments and performance metrics</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Portfolio Summary -->
+                <div class="lg:col-span-1 order-2 lg:order-1">
+                    <div class="floating-card p-6 mb-6">
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-6">Account Summary</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300 font-medium">Total Balance:</span>
+                                <span id="totalBalance" class="text-xl lg:text-2xl font-bold text-primary">$100,000</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300 font-medium">Available Cash:</span>
+                                <span id="availableCash" class="font-semibold text-green-500">$100,000</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300 font-medium">Total P&amp;L:</span>
+                                <span id="totalPL" class="font-semibold text-gray-500">$0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300 font-medium">P&amp;L Percentage:</span>
+                                <span id="plPercentage" class="font-semibold text-gray-500">0%</span>
+                            </div>
+                        </div>
+
+                        <button onclick="clearPortfolio()" class="w-full mt-6 bg-red-500 text-white py-3 rounded-lg font-semibold hover:bg-red-600 transition-all duration-300 transform hover:scale-105">
+                            <i class="fas fa-refresh mr-2"></i>Reset Portfolio
+                        </button>
+                    </div>
+
+                    <!-- Holdings -->
+                    <div class="floating-card p-6">
+                        <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white mb-4">Current Holdings</h3>
+                        <div id="holdingsContainer">
+                            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                                <i class="fas fa-coins text-4xl mb-4 opacity-50"></i>
+                                <p>No holdings yet. Start trading to build your portfolio.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Chart -->
+                <div class="lg:col-span-2 order-1 lg:order-2">
+                    <div class="floating-card p-6">
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-6">Portfolio Performance</h3>
+                        <div class="chart-container large">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="floating-card p-6 mt-6">
+                        <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white mb-4">Recent Activity</h3>
+                        <div id="recentActivity" class="space-y-3">
+                            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                                <i class="fas fa-history text-4xl mb-4 opacity-50"></i>
+                                <p>No recent activity. Start trading to see transactions here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Book Section -->
+    <div id="orderbook" class="section pt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-12 animate-slide-up">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Live Market Data</h1>
+                <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Real-time order book and market depth</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6 lg:gap-8">
+                <!-- Buy Orders -->
+                <div class="floating-card p-6">
+                    <h3 class="text-lg lg:text-xl font-bold text-green-500 mb-6 flex items-center">
+                        <i class="fas fa-arrow-up mr-2"></i>Buy Orders
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-3 gap-4 text-sm font-semibold text-gray-600 dark:text-gray-400 border-b pb-2">
+                            <span>Price</span>
+                            <span>Amount</span>
+                            <span>Total</span>
+                        </div>
+                        <div id="buyOrders" class="space-y-1 max-h-96 overflow-y-auto">
+                            <!-- Buy orders populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sell Orders -->
+                <div class="floating-card p-6">
+                    <h3 class="text-lg lg:text-xl font-bold text-red-500 mb-6 flex items-center">
+                        <i class="fas fa-arrow-down mr-2"></i>Sell Orders
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-3 gap-4 text-sm font-semibold text-gray-600 dark:text-gray-400 border-b pb-2">
+                            <span>Price</span>
+                            <span>Amount</span>
+                            <span>Total</span>
+                        </div>
+                        <div id="sellOrders" class="space-y-1 max-h-96 overflow-y-auto">
+                            <!-- Sell orders populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Statistics -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-8">
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-green-500" id="totalBuyOrders">0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Buy Orders</div>
+                </div>
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-red-500" id="totalSellOrders">0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Sell Orders</div>
+                </div>
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-primary" id="spread">$0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Spread</div>
+                </div>
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-accent" id="totalVolume">0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Volume</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trade History Section -->
+    <div id="history" class="section pt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-12 animate-slide-up">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Trading History</h1>
+                <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Complete record of your trading activity and performance</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="floating-card p-6 mb-8">
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Asset</label>
+                        <select id="historyFilter" class="crypto-input w-full">
+                            <option value="all">All Assets</option>
+                            <option value="BTC">Bitcoin (BTC)</option>
+                            <option value="ETH">Ethereum (ETH)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Type</label>
+                        <select id="typeFilter" class="crypto-input w-full">
+                            <option value="all">All Types</option>
+                            <option value="buy">Buy Orders</option>
+                            <option value="sell">Sell Orders</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Period</label>
+                        <select id="dateFilter" class="crypto-input w-full">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="applyFilters()" class="btn-primary w-full">
+                            <i class="fas fa-filter mr-2"></i>Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade History Table -->
+            <div class="floating-card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="py-4 px-4 lg:px-6 text-left text-gray-700 dark:text-gray-300 font-semibold text-sm">Time</th>
+                                <th class="py-4 px-4 lg:px-6 text-left text-gray-700 dark:text-gray-300 font-semibold text-sm">Type</th>
+                                <th class="py-4 px-4 lg:px-6 text-left text-gray-700 dark:text-gray-300 font-semibold text-sm">Asset</th>
+                                <th class="py-4 px-4 lg:px-6 text-left text-gray-700 dark:text-gray-300 font-semibold text-sm">Amount</th>
+                                <th class="py-4 px-4 lg:px-6 text-left text-gray-700 dark:text-gray-300 font-semibold text-sm">Price</th>
+                                <th class="py-4 px-4 lg:px-6 text-left text-gray-700 dark:text-gray-300 font-semibold text-sm">Total</th>
+                                <th class="py-4 px-4 lg:px-6 text-left text-gray-700 dark:text-gray-300 font-semibold text-sm">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradesTable">
+                            <tr>
+                                <td colspan="7" class="py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <i class="fas fa-chart-line text-4xl mb-4 opacity-50"></i>
+                                    <p>No trades yet. Start trading to see your history here.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Trade Statistics -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-8">
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-primary" id="totalTrades">0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Total Trades</div>
+                </div>
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-green-500" id="successfulTrades">0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Successful</div>
+                </div>
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-accent" id="totalVolumeTrade">$0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Total Volume</div>
+                </div>
+                <div class="floating-card p-4 lg:p-6 text-center">
+                    <div class="text-lg lg:text-2xl font-bold text-primary" id="avgTradeSize">$0</div>
+                    <div class="text-xs lg:text-sm text-gray-600 dark:text-gray-400">Avg Trade Size</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div id="analytics" class="section pt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-12 animate-slide-up">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-4">Advanced Analytics</h1>
+                <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Deep insights into market trends and portfolio performance</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
+                <!-- Performance Chart -->
+                <div class="floating-card p-6">
+                    <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white mb-4">Performance vs Market</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Risk Analysis -->
+                <div class="floating-card p-6">
+                    <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white mb-6">Risk Analysis</h3>
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Risk Score:</span>
+                            <div class="flex items-center">
+                                <div class="w-24 h-3 bg-gray-200 dark:bg-gray-700 rounded-full mr-3">
+                                    <div class="h-3 bg-yellow-500 rounded-full" style="width: 65%"></div>
+                                </div>
+                                <span class="font-semibold text-yellow-500">Medium</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Volatility:</span>
+                            <span class="font-semibold text-orange-500">High</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Sharpe Ratio:</span>
+                            <span class="font-semibold text-green-500">1.45</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Max Drawdown:</span>
+                            <span class="font-semibold text-red-500">-8.3%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Insights -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div class="floating-card p-6">
+                    <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white mb-6">Market Sentiment</h3>
+                    <div class="text-center">
+                        <div class="relative w-32 h-32 mx-auto mb-4">
+                            <svg class="w-32 h-32 transform -rotate-90">
+                                <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="8" fill="transparent"></circle>
+                                <circle cx="64" cy="64" r="56" stroke="#00FFA3" stroke-width="8" fill="transparent" stroke-dasharray="351.86" stroke-dashoffset="105.56"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-2xl font-bold text-green-500">70%</span>
+                            </div>
+                        </div>
+                        <p class="text-green-500 font-semibold text-lg">Bullish</p>
+                    </div>
+                </div>
+
+                <div class="floating-card p-6">
+                    <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white mb-6">Fear &amp; Greed Index</h3>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-orange-500 mb-2">45</div>
+                        <div class="text-orange-500 font-semibold mb-4 text-lg">Fear</div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+                            <div class="bg-orange-500 h-4 rounded-full transition-all duration-500" style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="floating-card p-6 sm:col-span-2 lg:col-span-1">
+                    <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white mb-6">Social Volume</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Twitter:</span>
+                            <span class="font-semibold text-blue-500">+15.2%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Reddit:</span>
+                            <span class="font-semibold text-green-500">+8.7%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">News:</span>
+                            <span class="font-semibold text-orange-500">+22.1%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backend Admin Section -->
+    <div id="backend" class="section pt-24 backend-mode" style="display: none;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-12 animate-slide-up">
+                <h1 class="text-3xl sm:text-4xl font-bold text-red-400 mb-4">🔒 Administrative Dashboard</h1>
+                <p class="text-lg sm:text-xl text-gray-300">Secure system management interface</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6 lg:gap-8">
+                <!-- System Stats -->
+                <div class="admin-panel floating-card bg-gray-800 p-6">
+                    <h3 class="text-xl lg:text-2xl font-bold text-red-400 mb-6">System Statistics</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-gray-700">
+                            <span class="text-gray-300 font-medium">Total Users:</span>
+                            <span class="font-bold text-green-400" id="adminTotalUsers">127,573</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-gray-700">
+                            <span class="text-gray-300 font-medium">Active Sessions:</span>
+                            <span class="font-bold text-blue-400" id="adminActiveSessions">8,234</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-gray-700">
+                            <span class="text-gray-300 font-medium">Total Trades:</span>
+                            <span class="font-bold text-yellow-400" id="adminTotalTrades">2,892,456</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-gray-700">
+                            <span class="text-gray-300 font-medium">System Status:</span>
+                            <span class="font-bold text-green-400">Operational</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Operations -->
+                <div class="admin-panel floating-card bg-gray-800 p-6">
+                    <h3 class="text-xl lg:text-2xl font-bold text-red-400 mb-6">Database Operations</h3>
+                    <div class="space-y-4">
+                        <button onclick="backupDatabase()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300">
+                            <i class="fas fa-download mr-2"></i>Backup Database
+                        </button>
+                        <button onclick="clearLogs()" class="w-full bg-yellow-600 text-white py-3 rounded-lg font-semibold hover:bg-yellow-700 transition-all duration-300">
+                            <i class="fas fa-trash mr-2"></i>Clear System Logs
+                        </button>
+                        <button onclick="refreshCache()" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all duration-300">
+                            <i class="fas fa-refresh mr-2"></i>Refresh Cache
+                        </button>
+                        <button onclick="systemRestart()" class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-all duration-300">
+                            <i class="fas fa-power-off mr-2"></i>System Restart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Logs -->
+            <div class="admin-panel floating-card bg-gray-800 p-6 mt-8">
+                <h3 class="text-xl lg:text-2xl font-bold text-red-400 mb-6">Live System Logs</h3>
+                <div id="adminLogs" class="bg-black rounded-lg p-4 h-64 overflow-y-auto font-mono text-sm text-green-400">
+                    <!-- Live logs populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- User Management -->
+            <div class="admin-panel floating-card bg-gray-800 p-6 mt-8">
+                <h3 class="text-xl lg:text-2xl font-bold text-red-400 mb-6">User Management</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-gray-300">
+                        <thead>
+                            <tr class="border-b border-gray-600">
+                                <th class="py-3 px-4 text-left">User ID</th>
+                                <th class="py-3 px-4 text-left">Username</th>
+                                <th class="py-3 px-4 text-left">Status</th>
+                                <th class="py-3 px-4 text-left">Last Login</th>
+                                <th class="py-3 px-4 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTable">
+                            <!-- User data populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Modals -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Login to Alpha Trade</h2>
+                <button onclick="closeModal('loginModal')" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username" class="crypto-input w-full">
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" class="crypto-input w-full">
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">2FA Code</label>
+                    <input type="text" id="login2FA" placeholder="Enter 2FA code" class="crypto-input w-full">
+                </div>
+                <button onclick="login()" class="btn-primary w-full">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+                <div class="text-center">
+                    <a href="#" class="text-primary hover:text-accent transition-colors duration-300">Forgot Password?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KYC Modal -->
+    <div id="kycModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Identity Verification</h2>
+                <button onclick="closeModal('kycModal')" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Full Name</label>
+                    <input type="text" id="kycName" placeholder="Enter full legal name" class="crypto-input w-full">
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Identity Document</label>
+                    <input type="file" id="kycDocument" accept="image/*" class="crypto-input w-full">
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">Address</label>
+                    <textarea id="kycAddress" placeholder="Enter full address" rows="3" class="crypto-input w-full"></textarea>
+                </div>
+                <button onclick="submitKYC()" class="btn-accent w-full">
+                    <i class="fas fa-check mr-2"></i>Submit Verification
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Modal -->
+    <div id="securityModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Security Features</h2>
+                <button onclick="closeModal('securityModal')" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div class="flex items-center space-x-4 p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
+                    <div class="bg-green-500 p-3 rounded-full">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 dark:text-white">Military-Grade Encryption</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">AES-256 encryption protects all data</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                    <div class="bg-blue-500 p-3 rounded-full">
+                        <i class="fas fa-snowflake text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 dark:text-white">Cold Storage</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">98% of assets stored offline</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4 p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20">
+                    <div class="bg-purple-500 p-3 rounded-full">
+                        <i class="fas fa-key text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 dark:text-white">Multi-Signature Wallets</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">Multiple approvals required for transactions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="serviceModalTitle" class="text-2xl font-bold text-gray-800 dark:text-white"></h2>
+                <button onclick="closeModal('serviceModal')" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="serviceModalContent" class="space-y-4">
+                <!-- Content populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content max-w-md">
+            <div class="text-center">
+                <div class="bg-yellow-100 dark:bg-yellow-900 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4" id="confirmTitle">Confirm Action</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-6" id="confirmMessage">Are you sure you want to proceed?</p>
+                <div class="flex space-x-4">
+                    <button onclick="closeModal('confirmModal')" class="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg font-semibold hover:bg-gray-400 dark:hover:bg-gray-500 transition-all duration-300">
+                        Cancel
+                    </button>
+                    <button id="confirmButton" class="flex-1 bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-all duration-300">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content max-w-md border-2 border-red-500">
+            <div class="text-center">
+                <div class="bg-red-100 dark:bg-red-900 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-lock text-red-600 dark:text-red-400 text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">🔒 Administrative Access</h2>
+                <div class="space-y-4">
+                    <input type="text" id="adminUsername" placeholder="Admin Username" class="crypto-input w-full border-red-300 focus:border-red-500">
+                    <input type="password" id="adminPassword" placeholder="Admin Password" class="crypto-input w-full border-red-300 focus:border-red-500">
+                </div>
+                <div class="flex space-x-4 mt-6">
+                    <button onclick="closeModal('adminLoginModal')" class="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg font-semibold hover:bg-gray-400 dark:hover:bg-gray-500 transition-all duration-300">
+                        Cancel
+                    </button>
+                    <button onclick="adminLogin()" class="flex-1 bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-all duration-300">
+                        Access
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-secondary text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center mb-6">
+                    <i class="fas fa-coins text-accent text-3xl mr-3"></i>
+                    <h3 class="text-2xl font-bold">Alpha Trade Crypto</h3>
+                </div>
+                <div class="flex justify-center space-x-6 mb-6">
+                    <a href="#" class="text-gray-300 hover:text-accent transition-colors duration-300">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-300 hover:text-accent transition-colors duration-300">
+                        <i class="fab fa-facebook text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-300 hover:text-accent transition-colors duration-300">
+                        <i class="fab fa-telegram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-300 hover:text-accent transition-colors duration-300">
+                        <i class="fab fa-discord text-xl"></i>
+                    </a>
+                </div>
+                <p class="text-gray-300 mb-2">Alpha Trade Crypto © 2025. Powered by Azasure Technologies.</p>
+                <p class="text-sm text-gray-400">Professional trading platform with institutional-grade security and analytics.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let isLoggedIn = false;
+        let isKYCVerified = false;
+        let currentUser = null;
+        let isAdminMode = false;
+        let logoClickCount = 0;
+        let logoClickTimer = null;
+
+        // Portfolio data
+        let portfolio = {
+            cash: 100000,
+            btc: 0,
+            eth: 0,
+            totalValue: 100000
+        };
+
+        // Market data
+        let marketData = {
+            BTC: {
+                price: 65234,
+                change: 2.34,
+                high: 67890,
+                low: 64123,
+                volume: '2.34M',
+                marketCap: '1.2T'
+            },
+            ETH: {
+                price: 3421,
+                change: 1.85,
+                high: 3567,
+                low: 3389,
+                volume: '1.87M',
+                marketCap: '412B'
+            }
+        };
+
+        // Trading data
+        let trades = [];
+        let orders = { buy: [], sell: [] };
+        let subscribers = [];
+
+        // Charts
+        let marketChart = null;
+        let portfolioChart = null;
+        let performanceChart = null;
+
+        // Enhanced leaderboard data
+        const depositsData = [
+            { rank: 1, gateway: 'Bitcoin', name: 'Alexander Chen', amount: '$2,450,000', verified: true },
+            { rank: 2, gateway: 'Ethereum', name: 'Sarah Rodriguez', amount: '$1,892,000', verified: true },
+            { rank: 3, gateway: 'USDT', name: 'Michael Thompson', amount: '$1,680,000', verified: true },
+            { rank: 4, gateway: 'Bitcoin', name: 'Emma Williams', amount: '$1,234,000', verified: true },
+            { rank: 5, gateway: 'Ethereum', name: 'David Park', amount: '$987,000', verified: true },
+            { rank: 6, gateway: 'USDT', name: 'Lisa Wang', amount: '$856,000', verified: true },
+            { rank: 7, gateway: 'Bitcoin', name: 'James Mitchell', amount: '$723,000', verified: true },
+            { rank: 8, gateway: 'Ethereum', name: 'Anna Johnson', amount: '$645,000', verified: true },
+            { rank: 9, gateway: 'USDT', name: 'Robert Davis', amount: '$589,000', verified: true },
+            { rank: 10, gateway: 'Bitcoin', name: 'Maria Garcia', amount: '$512,000', verified: true }
+        ];
+
+        const earnersData = [
+            { rank: 1, gateway: 'Bitcoin', name: 'Phoenix Capital', amount: '+$3,280,945', verified: true },
+            { rank: 2, gateway: 'Ethereum', name: 'Quantum Traders', amount: '+$2,891,203', verified: true },
+            { rank: 3, gateway: 'Multi-Asset', name: 'Alpha Strategies', amount: '+$2,645,789', verified: true },
+            { rank: 4, gateway: 'Bitcoin', name: 'Digital Asset Fund', amount: '+$2,234,567', verified: true },
+            { rank: 5, gateway: 'Ethereum', name: 'Crypto Elite', amount: '+$1,987,654', verified: true },
+            { rank: 6, gateway: 'Multi-Asset', name: 'Blockchain Ventures', amount: '+$1,756,432', verified: true },
+            { rank: 7, gateway: 'Bitcoin', name: 'Golden Bull', amount: '+$1,523,891', verified: true },
+            { rank: 8, gateway: 'Ethereum', name: 'Future Finance', amount: '+$1,367,892', verified: true },
+            { rank: 9, gateway: 'Multi-Asset', name: 'Apex Trading', amount: '+$1,156,789', verified: true },
+            { rank: 10, gateway: 'Bitcoin', name: 'Elite Investors', amount: '+$989,654', verified: true }
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            createParticles();
+            populateLeaderboards();
+            initializeCharts();
+            startMarketUpdates();
+            updateOrderBook();
+            setupThemeDetection();
+        });
+
+        function setupThemeDetection() {
+            // Set initial theme based on system preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            // Listen for theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                if (event.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            });
+        }
+
+        function initializeApp() {
+            updateUI();
+            updatePortfolioDisplay();
+            generateOrderBook();
+        }
+
+        function setupEventListeners() {
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobileMenu');
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Logo click for admin access
+            document.getElementById('logo').addEventListener('click', function() {
+                logoClickCount++;
+                
+                if (logoClickTimer) {
+                    clearTimeout(logoClickTimer);
+                }
+                
+                logoClickTimer = setTimeout(() => {
+                    logoClickCount = 0;
+                }, 2000);
+                
+                if (logoClickCount >= 3) {
+                    logoClickCount = 0;
+                    showAdminLogin();
+                }
+            });
+
+            // Slider event listeners
+            document.getElementById('stopLossSlider').addEventListener('input', function() {
+                document.getElementById('stopLossValue').textContent = this.value;
+            });
+
+            document.getElementById('takeProfitSlider').addEventListener('input', function() {
+                document.getElementById('takeProfitValue').textContent = this.value;
+            });
+
+            // Coin selection change
+            document.getElementById('coinSelect').addEventListener('change', function() {
+                updateCurrentPrice();
+                updateMarketChart();
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const mobileMenu = document.getElementById('mobileMenu');
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                
+                if (!mobileMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show target section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Close mobile menu if open
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function showLoginModal() {
+            if (isLoggedIn) {
+                logout();
+            } else {
+                document.getElementById('loginModal').classList.add('show');
+            }
+        }
+
+        function showKYCModal() {
+            if (!isLoggedIn) {
+                showToast('Please login first to complete verification', 'error');
+                return;
+            }
+            document.getElementById('kycModal').classList.add('show');
+        }
+
+        function showSecurityModal() {
+            document.getElementById('securityModal').classList.add('show');
+        }
+
+        function showServiceModal(serviceType) {
+            const modal = document.getElementById('serviceModal');
+            const title = document.getElementById('serviceModalTitle');
+            const content = document.getElementById('serviceModalContent');
+
+            const serviceInfo = {
+                forex: {
+                    title: 'Professional Forex Trading',
+                    content: `
+                        <div class="space-y-6">
+                            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">Access global foreign exchange markets with institutional-grade execution and professional tools.</p>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-4 text-lg">Premium Features:</h4>
+                                <ul class="text-blue-700 dark:text-blue-300 space-y-2">
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Spreads from 0.1 pips</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Leverage up to 1:500</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>24/5 market access</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Advanced charting tools</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Risk management tools</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Real-time market analysis</li>
+                                </ul>
+                            </div>
+                            <button onclick="showSection('simulator')" class="btn-primary w-full">
+                                <i class="fas fa-chart-line mr-2"></i>Start Forex Trading
+                            </button>
+                        </div>
+                    `
+                },
+                exchange: {
+                    title: 'Cryptocurrency Exchange',
+                    content: `
+                        <div class="space-y-6">
+                            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">Trade digital assets with deep liquidity, competitive rates, and instant settlement.</p>
+                            <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg">
+                                <h4 class="font-semibold text-green-800 dark:text-green-200 mb-4 text-lg">Exchange Features:</h4>
+                                <ul class="text-green-700 dark:text-green-300 space-y-2">
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>200+ cryptocurrencies supported</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Best market rates guaranteed</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Instant settlement</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Low transaction fees</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Advanced order types</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Professional API access</li>
+                                </ul>
+                            </div>
+                            <button onclick="showSection('simulator')" class="btn-primary w-full">
+                                <i class="fas fa-exchange-alt mr-2"></i>Start Trading Crypto
+                            </button>
+                        </div>
+                    `
+                },
+                banking: {
+                    title: 'Wealth Management Services',
+                    content: `
+                        <div class="space-y-6">
+                            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">Professional wealth management and investment advisory services tailored to your financial goals.</p>
+                            <div class="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg">
+                                <h4 class="font-semibold text-purple-800 dark:text-purple-200 mb-4 text-lg">Wealth Services:</h4>
+                                <ul class="text-purple-700 dark:text-purple-300 space-y-2">
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Dedicated wealth advisors</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Custom investment strategies</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Risk assessment and management</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Portfolio diversification</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Tax optimization strategies</li>
+                                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>24/7 account management</li>
+                                </ul>
+                            </div>
+                            <button onclick="simulateChat()" class="btn-primary w-full">
+                                <i class="fas fa-user-tie mr-2"></i>Speak with Advisor
+                            </button>
+                        </div>
+                    `
+                }
+            };
+
+            const service = serviceInfo[serviceType];
+            title.textContent = service.title;
+            content.innerHTML = service.content;
+            modal.classList.add('show');
+        }
+
+        function showAdminLogin() {
+            document.getElementById('adminLoginModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const twoFA = document.getElementById('login2FA').value;
+
+            if (!username || !password || !twoFA) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Simulate login process
+            isLoggedIn = true;
+            currentUser = { username, loginTime: new Date() };
+            
+            document.getElementById('loginButtonText').textContent = 'Logout';
+            document.getElementById('mobileLoginText').textContent = 'Logout';
+            closeModal('loginModal');
+            showToast(`Welcome back, ${username}! Account verified successfully.`, 'success');
+            updateUI();
+
+            // Clear form
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('login2FA').value = '';
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            isKYCVerified = false;
+            currentUser = null;
+            
+            document.getElementById('loginButtonText').textContent = 'Login';
+            document.getElementById('mobileLoginText').textContent = 'Login';
+            showToast('Successfully logged out. Thank you for using Alpha Trade Crypto.', 'success');
+            updateUI();
+        }
+
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (username === 'admin' && password === 'admin111') {
+                isAdminMode = true;
+                closeModal('adminLoginModal');
+                showSection('backend');
+                showToast('Administrative access granted', 'success');
+                startAdminLogs();
+                populateAdminData();
+            } else {
+                showToast('Invalid administrative credentials', 'error');
+            }
+
+            // Clear form
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function submitKYC() {
+            const name = document.getElementById('kycName').value;
+            const document = document.getElementById('kycDocument').files[0];
+            const address = document.getElementById('kycAddress').value;
+
+            if (!name || !document || !address) {
+                showToast('Please complete all verification fields and upload required document', 'error');
+                return;
+            }
+
+            // Simulate KYC verification
+            isKYCVerified = true;
+            closeModal('kycModal');
+            showToast('Identity verification completed successfully! Full trading features unlocked.', 'success');
+            updateUI();
+
+            // Clear form
+            document.getElementById('kycName').value = '';
+            document.getElementById('kycDocument').value = '';
+            document.getElementById('kycAddress').value = '';
+        }
+
+        function executeTrade(type) {
+            if (!isLoggedIn) {
+                showToast('Please login to access trading features', 'error');
+                showLoginModal();
+                return;
+            }
+
+            if (!isKYCVerified) {
+                showToast('Please complete identity verification to enable trading', 'error');
+                showKYCModal();
+                return;
+            }
+
+            const amount = parseFloat(document.getElementById('tradeAmount').value);
+            const coin = document.getElementById('coinSelect').value;
+            const currentPrice = marketData[coin].price;
+            const stopLoss = parseFloat(document.getElementById('stopLossValue').textContent);
+            const takeProfit = parseFloat(document.getElementById('takeProfitValue').textContent);
+
+            if (!amount || amount < 10) {
+                showToast('Minimum trade amount is $10', 'error');
+                return;
+            }
+
+            if (type === 'buy' && amount > portfolio.cash) {
+                showToast('Insufficient account balance', 'error');
+                return;
+            }
+
+            const coinAmount = amount / currentPrice;
+            
+            if (type === 'sell') {
+                const availableCoin = portfolio[coin.toLowerCase()];
+                if (coinAmount > availableCoin) {
+                    showToast(`Insufficient ${coin} balance for this trade`, 'error');
+                    return;
+                }
+            }
+
+            // Execute trade
+            const trade = {
+                id: Date.now(),
+                type,
+                coin,
+                amount: coinAmount,
+                price: currentPrice,
+                total: amount,
+                timestamp: new Date(),
+                status: 'executed',
+                stopLoss: type === 'buy' ? currentPrice * (1 - stopLoss / 100) : currentPrice * (1 + stopLoss / 100),
+                takeProfit: type === 'buy' ? currentPrice * (1 + takeProfit / 100) : currentPrice * (1 - takeProfit / 100)
+            };
+
+            trades.push(trade);
+
+            // Update portfolio
+            if (type === 'buy') {
+                portfolio.cash -= amount;
+                portfolio[coin.toLowerCase()] += coinAmount;
+            } else {
+                portfolio.cash += amount;
+                portfolio[coin.toLowerCase()] -= coinAmount;
+            }
+
+            updatePortfolioDisplay();
+            updateTradeHistory();
+            updateOrderBook();
+            showToast(`${type.toUpperCase()} order executed successfully! ${coinAmount.toFixed(6)} ${coin}`, 'success');
+
+            // Clear trade amount
+            document.getElementById('tradeAmount').value = '';
+        }
+
+        function clearPortfolio() {
+            if (!isLoggedIn) {
+                showToast('Please login to access portfolio features', 'error');
+                return;
+            }
+
+            showConfirmDialog('Reset your portfolio to initial state? This will clear all positions and trading history.', () => {
+                portfolio = { cash: 100000, btc: 0, eth: 0, totalValue: 100000 };
+                trades = [];
+                updatePortfolioDisplay();
+                updateTradeHistory();
+                showToast('Portfolio reset to initial state', 'success');
+            });
+        }
+
+        function subscribeNewsletter() {
+            const email = document.getElementById('newsletterEmail').value;
+            
+            if (!email || !email.includes('@')) {
+                showToast('Please enter a valid email address', 'error');
+                return;
+            }
+
+            if (subscribers.includes(email)) {
+                showToast('This email is already subscribed to our newsletter', 'error');
+                return;
+            }
+
+            subscribers.push(email);
+            document.getElementById('subscriberCount').textContent = (127432 + subscribers.length).toLocaleString();
+            document.getElementById('newsletterEmail').value = '';
+            showToast('Successfully subscribed! Welcome to Alpha Trade Crypto newsletter.', 'success');
+        }
+
+        function simulateChat() {
+            showToast('Connecting to professional support team...', 'info');
+            setTimeout(() => {
+                showToast('Connected! Our expert advisor will assist you shortly.', 'success');
+            }, 2000);
+        }
+
+        function updateUI() {
+            const kycSection = document.getElementById('kycSection');
+            if (isKYCVerified) {
+                kycSection.style.display = 'none';
+            } else if (isLoggedIn) {
+                kycSection.style.display = 'block';
+            }
+        }
+
+        function updateCurrentPrice() {
+            const coin = document.getElementById('coinSelect').value;
+            const data = marketData[coin];
+            
+            document.getElementById('currentPrice').textContent = `$${data.price.toLocaleString()}`;
+            
+            const changeElement = document.getElementById('priceChange');
+            changeElement.textContent = `${data.change > 0 ? '+' : ''}${data.change.toFixed(2)}%`;
+            changeElement.className = data.change > 0 ? 'font-semibold price-up' : 'font-semibold price-down';
+
+            // Update stats
+            document.getElementById('dailyHigh').textContent = `$${data.high.toLocaleString()}`;
+            document.getElementById('dailyLow').textContent = `$${data.low.toLocaleString()}`;
+            document.getElementById('volume').textContent = data.volume;
+            document.getElementById('marketCap').textContent = data.marketCap;
+        }
+
+        function updatePortfolioDisplay() {
+            const btcValue = portfolio.btc * marketData.BTC.price;
+            const ethValue = portfolio.eth * marketData.ETH.price;
+            const totalValue = portfolio.cash + btcValue + ethValue;
+            const totalPL = totalValue - 100000;
+            const plPercentage = ((totalValue - 100000) / 100000 * 100).toFixed(2);
+
+            document.getElementById('totalBalance').textContent = `$${totalValue.toLocaleString()}`;
+            document.getElementById('availableCash').textContent = `$${portfolio.cash.toLocaleString()}`;
+            
+            const plElement = document.getElementById('totalPL');
+            const plPercentElement = document.getElementById('plPercentage');
+            
+            plElement.textContent = `${totalPL >= 0 ? '+' : ''}$${totalPL.toLocaleString()}`;
+            plPercentElement.textContent = `${plPercentage >= 0 ? '+' : ''}${plPercentage}%`;
+            
+            if (totalPL > 0) {
+                plElement.className = 'font-semibold text-green-500';
+                plPercentElement.className = 'font-semibold text-green-500';
+            } else if (totalPL < 0) {
+                plElement.className = 'font-semibold text-red-500';
+                plPercentElement.className = 'font-semibold text-red-500';
+            } else {
+                plElement.className = 'font-semibold text-gray-500';
+                plPercentElement.className = 'font-semibold text-gray-500';
+            }
+
+            // Update holdings
+            updateHoldings(btcValue, ethValue);
+            
+            // Update portfolio chart
+            updatePortfolioChart(totalValue);
+            updateRecentActivity();
+        }
+
+        function updateHoldings(btcValue, ethValue) {
+            const container = document.getElementById('holdingsContainer');
+            
+            if (portfolio.btc === 0 && portfolio.eth === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                        <i class="fas fa-coins text-4xl mb-4 opacity-50"></i>
+                        <p>No holdings yet. Start trading to build your portfolio.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let holdingsHTML = '<div class="space-y-3">';
+            
+            if (portfolio.btc > 0) {
+                const btcChange = marketData.BTC.change;
+                holdingsHTML += `
+                    <div class="floating-card p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fab fa-bitcoin text-yellow-500 text-2xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-lg">Bitcoin</div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">${portfolio.btc.toFixed(6)} BTC</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-lg">$${btcValue.toLocaleString()}</div>
+                                <div class="text-sm ${btcChange >= 0 ? 'text-green-500' : 'text-red-500'}">${btcChange >= 0 ? '+' : ''}${btcChange.toFixed(2)}%</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (portfolio.eth > 0) {
+                const ethChange = marketData.ETH.change;
+                holdingsHTML += `
+                    <div class="floating-card p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fab fa-ethereum text-blue-500 text-2xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-lg">Ethereum</div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">${portfolio.eth.toFixed(6)} ETH</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-lg">$${ethValue.toLocaleString()}</div>
+                                <div class="text-sm ${ethChange >= 0 ? 'text-green-500' : 'text-red-500'}">${ethChange >= 0 ? '+' : ''}${ethChange.toFixed(2)}%</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            holdingsHTML += '</div>';
+            container.innerHTML = holdingsHTML;
+        }
+
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            const recentTrades = trades.slice(-5).reverse();
+
+            if (recentTrades.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                        <i class="fas fa-history text-4xl mb-4 opacity-50"></i>
+                        <p>No recent activity. Start trading to see transactions here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let activityHTML = '';
+            recentTrades.forEach(trade => {
+                const icon = trade.type === 'buy' ? 'fa-arrow-up text-green-500' : 'fa-arrow-down text-red-500';
+                const bgColor = trade.type === 'buy' ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20';
+                
+                activityHTML += `
+                    <div class="${bgColor} p-4 rounded-lg flex justify-between items-center hover:shadow-lg transition-all duration-300">
+                        <div class="flex items-center">
+                            <i class="fas ${icon} text-xl mr-3"></i>
+                            <div>
+                                <div class="font-semibold">${trade.type.toUpperCase()} ${trade.coin}</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">${trade.timestamp.toLocaleString()}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold">$${trade.total.toLocaleString()}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">${trade.amount.toFixed(6)} ${trade.coin}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = activityHTML;
+        }
+
+        function updateTradeHistory() {
+            const tbody = document.getElementById('tradesTable');
+            
+            if (trades.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-12 text-center text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-chart-line text-4xl mb-4 opacity-50"></i>
+                            <p>No trades yet. Start trading to see your history here.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let tableHTML = '';
+            trades.slice().reverse().forEach(trade => {
+                const typeClass = trade.type === 'buy' ? 'text-green-500' : 'text-red-500';
+                const statusIcon = trade.status === 'executed' ? 'fa-check-circle text-green-500' : 'fa-clock text-yellow-500';
+                
+                tableHTML += `
+                    <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300">
+                        <td class="py-4 px-4 lg:px-6 text-gray-800 dark:text-gray-200 text-sm">${trade.timestamp.toLocaleString()}</td>
+                        <td class="py-4 px-4 lg:px-6">
+                            <span class="font-semibold ${typeClass} text-sm uppercase">${trade.type}</span>
+                        </td>
+                        <td class="py-4 px-4 lg:px-6 text-gray-800 dark:text-gray-200 font-medium text-sm">${trade.coin}</td>
+                        <td class="py-4 px-4 lg:px-6 text-gray-800 dark:text-gray-200 text-sm">${trade.amount.toFixed(6)}</td>
+                        <td class="py-4 px-4 lg:px-6 text-gray-800 dark:text-gray-200 text-sm">$${trade.price.toLocaleString()}</td>
+                        <td class="py-4 px-4 lg:px-6 text-gray-800 dark:text-gray-200 font-semibold text-sm">$${trade.total.toLocaleString()}</td>
+                        <td class="py-4 px-4 lg:px-6">
+                            <i class="fas ${statusIcon}"></i>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = tableHTML;
+            updateTradeStats();
+        }
+
+        function updateTradeStats() {
+            const totalTrades = trades.length;
+            const successfulTrades = trades.filter(t => t.status === 'executed').length;
+            const totalVolume = trades.reduce((sum, trade) => sum + trade.total, 0);
+            const avgTradeSize = totalTrades > 0 ? totalVolume / totalTrades : 0;
+
+            document.getElementById('totalTrades').textContent = totalTrades;
+            document.getElementById('successfulTrades').textContent = successfulTrades;
+            document.getElementById('totalVolumeTrade').textContent = `$${totalVolume.toLocaleString()}`;
+            document.getElementById('avgTradeSize').textContent = `$${avgTradeSize.toLocaleString()}`;
+        }
+
+        function generateOrderBook() {
+            const coin = document.getElementById('coinSelect')?.value || 'BTC';
+            const currentPrice = marketData[coin].price;
+            
+            orders.buy = [];
+            orders.sell = [];
+
+            // Generate realistic buy orders (below current price)
+            for (let i = 0; i < 15; i++) {
+                const price = currentPrice - (Math.random() * 200 + 50);
+                const amount = Math.random() * 5 + 0.5;
+                orders.buy.push({ price, amount, total: price * amount });
+            }
+
+            // Generate realistic sell orders (above current price)
+            for (let i = 0; i < 15; i++) {
+                const price = currentPrice + (Math.random() * 200 + 50);
+                const amount = Math.random() * 5 + 0.5;
+                orders.sell.push({ price, amount, total: price * amount });
+            }
+
+            // Sort orders appropriately
+            orders.buy.sort((a, b) => b.price - a.price);
+            orders.sell.sort((a, b) => a.price - b.price);
+        }
+
+        function updateOrderBook() {
+            generateOrderBook();
+            
+            const buyOrdersContainer = document.getElementById('buyOrders');
+            const sellOrdersContainer = document.getElementById('sellOrders');
+
+            if (!buyOrdersContainer || !sellOrdersContainer) return;
+
+            // Update buy orders
+            let buyHTML = '';
+            orders.buy.forEach((order, index) => {
+                const intensity = Math.max(0.1, 1 - (index * 0.1));
+                buyHTML += `
+                    <div class="grid grid-cols-3 gap-4 py-2 px-3 text-sm border-b border-green-100 dark:border-green-900/30 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200 rounded">
+                        <span class="text-green-600 dark:text-green-400 font-mono font-semibold">$${order.price.toFixed(2)}</span>
+                        <span class="text-gray-800 dark:text-gray-200 font-mono">${order.amount.toFixed(4)}</span>
+                        <span class="text-gray-600 dark:text-gray-400 font-mono text-xs">$${order.total.toFixed(0)}</span>
+                    </div>
+                `;
+            });
+            buyOrdersContainer.innerHTML = buyHTML;
+
+            // Update sell orders
+            let sellHTML = '';
+            orders.sell.forEach((order, index) => {
+                const intensity = Math.max(0.1, 1 - (index * 0.1));
+                sellHTML += `
+                    <div class="grid grid-cols-3 gap-4 py-2 px-3 text-sm border-b border-red-100 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 rounded">
+                        <span class="text-red-600 dark:text-red-400 font-mono font-semibold">$${order.price.toFixed(2)}</span>
+                        <span class="text-gray-800 dark:text-gray-200 font-mono">${order.amount.toFixed(4)}</span>
+                        <span class="text-gray-600 dark:text-gray-400 font-mono text-xs">$${order.total.toFixed(0)}</span>
+                    </div>
+                `;
+            });
+            sellOrdersContainer.innerHTML = sellHTML;
+
+            // Update market statistics
+            const totalBuyOrders = orders.buy.length;
+            const totalSellOrders = orders.sell.length;
+            const spread = orders.sell[0]?.price - orders.buy[0]?.price || 0;
+            const totalVolume = [...orders.buy, ...orders.sell].reduce((sum, order) => sum + order.amount, 0);
+
+            const totalBuyElement = document.getElementById('totalBuyOrders');
+            const totalSellElement = document.getElementById('totalSellOrders');
+            const spreadElement = document.getElementById('spread');
+            const totalVolumeElement = document.getElementById('totalVolume');
+
+            if (totalBuyElement) totalBuyElement.textContent = totalBuyOrders;
+            if (totalSellElement) totalSellElement.textContent = totalSellOrders;
+            if (spreadElement) spreadElement.textContent = `$${spread.toFixed(2)}`;
+            if (totalVolumeElement) totalVolumeElement.textContent = totalVolume.toFixed(2);
+        }
+
+        function populateLeaderboards() {
+            const depositsContainer = document.getElementById('depositsLeaderboard');
+            const earnersContainer = document.getElementById('earnersLeaderboard');
+
+            if (depositsContainer) {
+                let depositsHTML = '';
+                depositsData.forEach(item => {
+                    const rankBadgeClass = item.rank <= 3 ? 
+                        (item.rank === 1 ? 'rank-badge gold' : 
+                         item.rank === 2 ? 'rank-badge silver' : 
+                         'rank-badge bronze') : 'rank-badge';
+                    
+                    const gatewayIcon = item.gateway === 'Bitcoin' ? 'fab fa-bitcoin text-yellow-500' :
+                                      item.gateway === 'Ethereum' ? 'fab fa-ethereum text-blue-500' :
+                                      'fas fa-dollar-sign text-green-500';
+                    
+                    depositsHTML += `
+                        <div class="leaderboard-item floating-card p-4 cursor-pointer" onclick="showLeaderboardDetails('deposit', ${item.rank})">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="${rankBadgeClass}">
+                                        ${item.rank}
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <i class="${gatewayIcon} text-xl"></i>
+                                        <div>
+                                            <div class="font-semibold text-gray-800 dark:text-white">${item.name}</div>
+                                            <div class="text-sm text-gray-600 dark:text-gray-400">${item.gateway}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-lg text-primary">${item.amount}</div>
+                                    ${item.verified ? '<i class="fas fa-shield-check text-green-500 text-sm"></i>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                depositsContainer.innerHTML = depositsHTML;
+            }
+
+            if (earnersContainer) {
+                let earnersHTML = '';
+                earnersData.forEach(item => {
+                    const rankBadgeClass = item.rank <= 3 ? 
+                        (item.rank === 1 ? 'rank-badge gold' : 
+                         item.rank === 2 ? 'rank-badge silver' : 
+                         'rank-badge bronze') : 'rank-badge';
+                    
+                    const gatewayIcon = item.gateway === 'Bitcoin' ? 'fab fa-bitcoin text-yellow-500' :
+                                      item.gateway === 'Ethereum' ? 'fab fa-ethereum text-blue-500' :
+                                      'fas fa-chart-line text-accent';
+                    
+                    earnersHTML += `
+                        <div class="leaderboard-item floating-card p-4 cursor-pointer" onclick="showLeaderboardDetails('earner', ${item.rank})">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="${rankBadgeClass}">
+                                        ${item.rank}
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <i class="${gatewayIcon} text-xl"></i>
+                                        <div>
+                                            <div class="font-semibold text-gray-800 dark:text-white">${item.name}</div>
+                                            <div class="text-sm text-gray-600 dark:text-gray-400">${item.gateway}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-lg text-accent">${item.amount}</div>
+                                    ${item.verified ? '<i class="fas fa-trophy text-yellow-500 text-sm"></i>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                earnersContainer.innerHTML = earnersHTML;
+            }
+        }
+
+        function showLeaderboardDetails(type, rank) {
+            const data = type === 'deposit' ? depositsData : earnersData;
+            const item = data.find(d => d.rank === rank);
+            
+            if (item) {
+                const message = `🏆 Rank #${rank}: ${item.name}\n💰 ${item.amount} via ${item.gateway}\n${item.verified ? '✅ Verified Professional Trader' : ''}`;
+                showToast(message, 'info');
+            }
+        }
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.backgroundColor = Math.random() > 0.5 ? '#5D5CDE' : '#00FFA3';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function initializeCharts() {
+            // Market Chart
+            const marketCtx = document.getElementById('marketChart');
+            if (marketCtx) {
+                marketChart = new Chart(marketCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'BTC Price ($)',
+                            data: [],
+                            borderColor: '#FFD700',
+                            backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#FFD700',
+                            pointBorderColor: '#FFA500',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { 
+                                    color: '#6B7280',
+                                    font: { size: 11 },
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { color: '#6B7280', font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+                
+                updateMarketChart();
+            }
+
+            // Portfolio Chart
+            const portfolioCtx = document.getElementById('portfolioChart');
+            if (portfolioCtx) {
+                portfolioChart = new Chart(portfolioCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [new Date().toLocaleTimeString()],
+                        datasets: [{
+                            label: 'Portfolio Value ($)',
+                            data: [100000],
+                            borderColor: '#00FFA3',
+                            backgroundColor: 'rgba(0, 255, 163, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#00FFA3',
+                            pointBorderColor: '#00E694',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: { 
+                                    color: '#6B7280',
+                                    font: { size: 11 },
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            },
+                            x: {
+                                ticks: { color: '#6B7280', font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart');
+            if (performanceCtx) {
+                performanceChart = new Chart(performanceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1D', '7D', '30D', '90D', '1Y'],
+                        datasets: [{
+                            label: 'Your Portfolio',
+                            data: [0, 2.5, -1.2, 8.7, 15.4],
+                            borderColor: '#00FFA3',
+                            backgroundColor: 'rgba(0, 255, 163, 0.1)',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#00FFA3'
+                        }, {
+                            label: 'Market Average',
+                            data: [0, 1.8, -2.1, 6.3, 12.1],
+                            borderColor: '#5D5CDE',
+                            backgroundColor: 'rgba(93, 92, 222, 0.1)',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#5D5CDE'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: { 
+                                    color: '#6B7280',
+                                    font: { size: 11 },
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            x: {
+                                ticks: { color: '#6B7280', font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateMarketChart() {
+            if (!marketChart) return;
+
+            const coin = document.getElementById('coinSelect')?.value || 'BTC';
+            const currentTime = new Date().toLocaleTimeString();
+            const currentPrice = marketData[coin].price;
+
+            const data = marketChart.data;
+            data.labels.push(currentTime);
+            data.datasets[0].data.push(currentPrice);
+            data.datasets[0].label = `${coin} Price ($)`;
+            
+            if (coin === 'BTC') {
+                data.datasets[0].borderColor = '#FFD700';
+                data.datasets[0].backgroundColor = 'rgba(255, 215, 0, 0.1)';
+                data.datasets[0].pointBackgroundColor = '#FFD700';
+            } else {
+                data.datasets[0].borderColor = '#627EEA';
+                data.datasets[0].backgroundColor = 'rgba(98, 126, 234, 0.1)';
+                data.datasets[0].pointBackgroundColor = '#627EEA';
+            }
+
+            // Keep only last 20 data points
+            if (data.labels.length > 20) {
+                data.labels.shift();
+                data.datasets[0].data.shift();
+            }
+
+            marketChart.update('none');
+        }
+
+        function updatePortfolioChart(totalValue) {
+            if (!portfolioChart) return;
+
+            const currentTime = new Date().toLocaleTimeString();
+            const data = portfolioChart.data;
+            
+            data.labels.push(currentTime);
+            data.datasets[0].data.push(totalValue);
+
+            // Keep only last 20 data points
+            if (data.labels.length > 20) {
+                data.labels.shift();
+                data.datasets[0].data.shift();
+            }
+
+            portfolioChart.update('none');
+        }
+
+        function startMarketUpdates() {
+            setInterval(() => {
+                // Update BTC price with more realistic movements
+                const btcChange = (Math.random() - 0.5) * 150;
+                marketData.BTC.price = Math.max(marketData.BTC.price + btcChange, 50000);
+                marketData.BTC.change = ((btcChange / marketData.BTC.price) * 100);
+                marketData.BTC.high = Math.max(marketData.BTC.high, marketData.BTC.price);
+                marketData.BTC.low = Math.min(marketData.BTC.low, marketData.BTC.price);
+
+                // Update ETH price
+                const ethChange = (Math.random() - 0.5) * 80;
+                marketData.ETH.price = Math.max(marketData.ETH.price + ethChange, 2000);
+                marketData.ETH.change = ((ethChange / marketData.ETH.price) * 100);
+                marketData.ETH.high = Math.max(marketData.ETH.high, marketData.ETH.price);
+                marketData.ETH.low = Math.min(marketData.ETH.low, marketData.ETH.price);
+
+                // Update UI
+                updateCurrentPrice();
+                updateMarketChart();
+                updatePortfolioDisplay();
+                updateTicker();
+                updateOrderBook();
+                checkStopLossTakeProfit();
+            }, 3000);
+        }
+
+        function updateTicker() {
+            document.getElementById('btc-ticker').textContent = marketData.BTC.price.toFixed(0);
+            document.getElementById('eth-ticker').textContent = marketData.ETH.price.toFixed(0);
+            
+            const btcChangeElement = document.getElementById('btc-change');
+            const ethChangeElement = document.getElementById('eth-change');
+            
+            btcChangeElement.textContent = `${marketData.BTC.change > 0 ? '+' : ''}${marketData.BTC.change.toFixed(2)}%`;
+            btcChangeElement.className = marketData.BTC.change > 0 ? 'ml-2 price-up' : 'ml-2 price-down';
+            
+            ethChangeElement.textContent = `${marketData.ETH.change > 0 ? '+' : ''}${marketData.ETH.change.toFixed(2)}%`;
+            ethChangeElement.className = marketData.ETH.change > 0 ? 'ml-2 price-up' : 'ml-2 price-down';
+
+            // Update active users (simulate realistic activity)
+            const currentUsers = parseInt(document.getElementById('users-online').textContent.replace(/,/g, ''));
+            const userChange = Math.floor(Math.random() * 50) - 25;
+            const newUsers = Math.max(20000, currentUsers + userChange);
+            document.getElementById('users-online').textContent = newUsers.toLocaleString();
+        }
+
+        function checkStopLossTakeProfit() {
+            trades.forEach(trade => {
+                if (trade.status !== 'executed') return;
+
+                const currentPrice = marketData[trade.coin].price;
+                
+                if (trade.type === 'buy') {
+                    if (currentPrice <= trade.stopLoss) {
+                        showToast(`🛑 Stop Loss triggered for ${trade.coin} at $${currentPrice.toFixed(2)}`, 'warning');
+                    } else if (currentPrice >= trade.takeProfit) {
+                        showToast(`🎯 Take Profit triggered for ${trade.coin} at $${currentPrice.toFixed(2)}`, 'success');
+                    }
+                } else {
+                    if (currentPrice >= trade.stopLoss) {
+                        showToast(`🛑 Stop Loss triggered for ${trade.coin} at $${currentPrice.toFixed(2)}`, 'warning');
+                    } else if (currentPrice <= trade.takeProfit) {
+                        showToast(`🎯 Take Profit triggered for ${trade.coin} at $${currentPrice.toFixed(2)}`, 'success');
+                    }
+                }
+            });
+        }
+
+        function applyFilters() {
+            // Enhanced filtering functionality
+            showToast('Market filters applied successfully', 'success');
+        }
+
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function showConfirmDialog(message, onConfirm) {
+            const modal = document.getElementById('confirmModal');
+            const messageElement = document.getElementById('confirmMessage');
+            const confirmButton = document.getElementById('confirmButton');
+            
+            messageElement.textContent = message;
+            confirmButton.onclick = () => {
+                closeModal('confirmModal');
+                onConfirm();
+            };
+            
+            modal.classList.add('show');
+        }
+
+        // Enhanced Admin functions
+        function startAdminLogs() {
+            const logsContainer = document.getElementById('adminLogs');
+            if (!logsContainer) return;
+
+            const initialLogs = [
+                '[INFO] System startup completed successfully',
+                '[INFO] Database connection pool initialized: 25/25 connections active',
+                '[INFO] Redis cache cluster connected: 3 nodes operational',
+                '[INFO] WebSocket connections: 8,234 active sessions',
+                '[INFO] Market data stream connected: BTC, ETH feeds active',
+                '[INFO] Security protocols initialized: AES-256 encryption enabled',
+                '[INFO] Load balancer: 4 servers online, health check passed',
+                '[INFO] Backup systems operational: Last backup 2 hours ago'
+            ];
+
+            logsContainer.innerHTML = initialLogs.join('\n') + '\n';
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+
+            // Simulate realistic live logs
+            setInterval(() => {
+                const logTypes = [
+                    '[INFO] User authentication successful',
+                    '[INFO] Trade order executed: BTC/USD',
+                    '[INFO] Market data updated: Price feed synchronized',
+                    '[WARNING] High volume detected: Auto-scaling initiated',
+                    '[INFO] Cache refresh completed: 2.3s response time',
+                    '[INFO] Security scan completed: No threats detected',
+                    '[INFO] Database backup progress: 85% complete',
+                    '[INFO] API rate limiter: 99.7% uptime maintained',
+                    '[WARNING] Memory usage: 78% - monitoring increased',
+                    '[INFO] SSL certificate renewed automatically'
+                ];
+                
+                const randomLog = logTypes[Math.floor(Math.random() * logTypes.length)];
+                const timestamp = new Date().toISOString();
+                logsContainer.innerHTML += `[${timestamp}] ${randomLog}\n`;
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+                
+                // Keep log size manageable
+                const lines = logsContainer.innerHTML.split('\n');
+                if (lines.length > 100) {
+                    logsContainer.innerHTML = lines.slice(-80).join('\n');
+                }
+            }, 4000);
+        }
+
+        function populateAdminData() {
+            const usersTable = document.getElementById('adminUsersTable');
+            if (!usersTable) return;
+
+            const users = [
+                { id: 'USR001', username: 'alexander_chen', status: 'Active', lastLogin: '2025-01-13 14:30:00', trades: 45 },
+                { id: 'USR002', username: 'crypto_elite_trader', status: 'Active', lastLogin: '2025-01-13 13:45:00', trades: 128 },
+                { id: 'USR003', username: 'blockchain_master', status: 'Active', lastLogin: '2025-01-13 15:20:00', trades: 89 },
+                { id: 'USR004', username: 'quantum_investor', status: 'Inactive', lastLogin: '2025-01-12 09:15:00', trades: 23 },
+                { id: 'USR005', username: 'digital_asset_pro', status: 'Active', lastLogin: '2025-01-13 12:30:00', trades: 67 },
+                { id: 'USR006', username: 'phoenix_capital', status: 'Active', lastLogin: '2025-01-13 16:45:00', trades: 203 },
+                { id: 'USR007', username: 'alpha_strategies', status: 'Active', lastLogin: '2025-01-13 11:20:00', trades: 156 }
+            ];
+
+            let usersHTML = '';
+            users.forEach(user => {
+                const statusClass = user.status === 'Active' ? 'text-green-400' : 'text-red-400';
+                usersHTML += `
+                    <tr class="border-b border-gray-600 hover:bg-gray-700/50 transition-colors duration-200">
+                        <td class="py-3 px-4 font-mono text-sm">${user.id}</td>
+                        <td class="py-3 px-4 font-semibold">${user.username}</td>
+                        <td class="py-3 px-4 ${statusClass} font-medium">${user.status}</td>
+                        <td class="py-3 px-4 text-sm">${user.lastLogin}</td>
+                        <td class="py-3 px-4">
+                            <button onclick="adminUserAction('${user.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors duration-200">
+                                Manage
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            usersTable.innerHTML = usersHTML;
+
+            // Update admin stats with more realistic numbers
+            document.getElementById('adminTotalUsers').textContent = '127,573';
+            document.getElementById('adminActiveSessions').textContent = '8,234';
+            document.getElementById('adminTotalTrades').textContent = '2,892,456';
+        }
+
+        function backupDatabase() {
+            showToast('Initiating database backup...', 'info');
+            setTimeout(() => {
+                showToast('Database backup completed successfully (2.3GB)', 'success');
+            }, 3000);
+        }
+
+        function clearLogs() {
+            const logsContainer = document.getElementById('adminLogs');
+            if (logsContainer) {
+                logsContainer.innerHTML = `[${new Date().toISOString()}] [ADMIN] System logs cleared by administrator\n`;
+            }
+            showToast('System logs cleared successfully', 'success');
+        }
+
+        function refreshCache() {
+            showToast('Refreshing distributed cache...', 'info');
+            setTimeout(() => {
+                showToast('Cache refresh completed (98.7% hit rate)', 'success');
+            }, 2000);
+        }
+
+        function systemRestart() {
+            showConfirmDialog('Restart the entire trading system? This will temporarily disconnect all active users and may take 2-3 minutes.', () => {
+                showToast('System restart initiated... Graceful shutdown in progress', 'warning');
+                setTimeout(() => {
+                    showToast('All services restarted successfully', 'success');
+                }, 4000);
+            });
+        }
+
+        function adminUserAction(userId) {
+            showToast(`Opening management dashboard for user ${userId}`, 'info');
+        }
+
+        // Initialize current price display
+        updateCurrentPrice();
+    </script>
+
+
+
+<!-- 🛠 Injected JavaScript for functionality -->
+<script>
+  // Section switching
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(sec => {
+      sec.classList.remove('active');
+      sec.style.display = 'none';
+    });
+    const section = document.getElementById(id);
+    if (section) {
+      section.classList.add('active');
+      section.style.display = 'block';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  // Mobile menu toggle
+  document.getElementById("mobileMenuBtn")?.addEventListener("click", () => {
+    const menu = document.getElementById("mobileMenu");
+    menu?.classList.toggle("hidden");
+  });
+
+  // Dummy ChartJS data
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.Chart) {
+      const marketCtx = document.getElementById("marketChart")?.getContext("2d");
+      const portfolioCtx = document.getElementById("portfolioChart")?.getContext("2d");
+      const perfCtx = document.getElementById("performanceChart")?.getContext("2d");
+      if (marketCtx) new Chart(marketCtx, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+          datasets: [{
+            label: 'BTC/USD',
+            data: [65234, 65400, 65300, 65500, 65700],
+            borderColor: '#5D5CDE',
+            fill: true,
+            backgroundColor: 'rgba(93, 92, 222, 0.1)'
+          }]
+        }
+      });
+      if (portfolioCtx) new Chart(portfolioCtx, {
+        type: 'bar',
+        data: {
+          labels: ['BTC', 'ETH'],
+          datasets: [{
+            label: 'Holdings Value',
+            data: [50000, 50000],
+            backgroundColor: ['#5D5CDE', '#00FFA3']
+          }]
+        }
+      });
+      if (perfCtx) new Chart(perfCtx, {
+        type: 'line',
+        data: {
+          labels: ['W1', 'W2', 'W3', 'W4'],
+          datasets: [{
+            label: 'Performance',
+            data: [1, 1.2, 1.1, 1.3],
+            borderColor: '#00FFA3',
+            backgroundColor: 'rgba(0,255,163,0.1)',
+            fill: true
+          }]
+        }
+      });
+    }
+
+    // Dummy leaderboard
+    document.getElementById('depositsLeaderboard').innerHTML = `
+      <div class="leaderboard-item p-3 bg-gray-50 dark:bg-gray-700 rounded-lg flex justify-between items-center">
+        <span><span class="rank-badge gold mr-2">1</span>TraderX</span>
+        <span class="font-semibold text-green-500">$50,000</span>
+      </div>`;
+    document.getElementById('earnersLeaderboard').innerHTML = `
+      <div class="leaderboard-item p-3 bg-gray-50 dark:bg-gray-700 rounded-lg flex justify-between items-center">
+        <span><span class="rank-badge gold mr-2">1</span>AlphaWolf</span>
+        <span class="font-semibold text-accent">$10,000</span>
+      </div>`;
+  });
+</script>
+</body>
+</html>
